@@ -1,7 +1,18 @@
 #!/usr/bin/env bash
-#This script configures Nginx so that its HTTP response contains a custom 
+#Double the number of webserver
 
-sudo apt update
-sudo apt install nginx -y
-sudo sed -i "20i\        add_header X-Served-By $HOSTNAME;" /etc/nginx/nginx.conf
+sudo apt-get update -y
+sudo apt-get install -y nginx
+config=\
+"server {
+        listen 80 default_server;
+        listen [::]:80 default_server;
+        root /var/www/html;
+        index index.html index.htm index.nginx-debian.html;
+        server_name _;
+	add_header X-Served-By \$HOSTNAME;
+}
+"
+sudo chown -R "$USER":"$USER" /etc/nginx/sites-available/default
+echo "$config" > /etc/nginx/sites-available/default
 sudo service nginx restart
