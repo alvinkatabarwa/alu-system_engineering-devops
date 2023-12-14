@@ -1,4 +1,4 @@
-# debug apache 500 server error
+pache 500 server error
 
 service {'nginx':
     ensure => 'running'

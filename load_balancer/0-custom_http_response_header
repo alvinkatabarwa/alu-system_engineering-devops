@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-#Double the number of webserver
+# Configure Nginx server so that /redirect_me is redirecting to another page
 
 sudo apt-get update -y
 sudo apt-get install -y nginx
