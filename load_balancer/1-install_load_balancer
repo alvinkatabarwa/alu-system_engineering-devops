@@ -1,20 +1,16 @@
 #!/usr/bin/env bash
-#Configure HAProxy to be able to accept requests on port tcp/80 and redirect them to the web servers
-sudo apt update -y
-sudo apt install haproxy -y
-config=\
-"backend my_servers
-        balance roundrobin
-        server 5684-web-01 54.221.116.64
-        server 5684-web-02 54.90.173.18
-frontend haproxy_inbound
-        bind *:80
-        default_backend my_servers
-        mode http
-"
+# Install the load balancer
 
-sudo chown -R "$USER":"$USER" /etc/default/haproxy
-sudo chown -R "$USER":"$USER" /etc/haproxy/haproxy.cfg
-sudo echo "ENABLED=1" >> /etc/default/haproxy
-sudo echo "$config" >> /etc/haproxy/haproxy.cfg
+# Update software packages
+sudo apt-get -y update && sudo apt-get -y upgrade
+
+# Install haproxy
+sudo apt-get -y install haproxy
+
+# Setup a proxy
+sudo sed -i 's/ENABLED=0/ENABLED=1/' /etc/default/haproxy
+sudo cp /etc/haproxy/haproxy.cfg /etc/haproxy/haproxy.cfg.original
+sudo sed -i "$ a\listen 5639-lb-01\n\tbind *:80\n\tmode http\n\tbalance roundrobin\n\toption httpclose\n\toption forwardfor\n\tserver 5639-web-02 3.80.103.249 check\n\tserver 5639-web-01 54.167.62.184 check" /etc/haproxy/haproxy.cfg
+
+# Start the proxy
 sudo service haproxy start
